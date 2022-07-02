@@ -34,7 +34,7 @@ public class RegisterAndLogin {
     @Test
     public void openPage() {
 
-        this.driver.navigate().to("https://pacific-spire-77723.herokuapp.com/");
+//        this.driver.navigate().to("https://pacific-spire-77723.herokuapp.com/");
         String title = this.driver.getTitle();
         System.out.println(title);
     }
@@ -42,20 +42,20 @@ public class RegisterAndLogin {
     @Test
     public void verifyPageTitle() {
         String title = this.driver.getTitle();
-        assertEquals(title, "BookIT");
+        assertEquals("BookIt", title);
     }
 
     @Test
     public void register_user_with_valid_data() {
         WebElement registerButton = this.driver.findElement(By.cssSelector(".nav-item:nth-child(3) span"));
         registerButton.click();
-        WebElement element = this.driver.findElement(By.id("first-name"));
+        WebElement firstName = this.driver.findElement(By.id("first-name"));
 
         String newUser = getNewUserName();
 
-        element.sendKeys(newUser);
-//        fNameEl.sendKeys("TestUser1");
-        String expected = element.getAttribute("value");
+        firstName.sendKeys(newUser);
+
+        String expectedFirstName = firstName.getAttribute("value");
         this.driver.findElement(By.id("last-name")).sendKeys("TestUser");
         this.driver.findElement(By.id("pet-name")).sendKeys("Bren");
         this.driver.findElement(By.id("pet-kg")).sendKeys("12");
@@ -83,11 +83,9 @@ public class RegisterAndLogin {
 
         String actual = this.driver.findElement(By.cssSelector("#navbarDarkProfileMenuLink > span")).getText();
 
-        assertEquals(actual, expected);
+        assertEquals(actual, expectedFirstName);
 
-        this.driver.findElement(By.id("navbarDarkProfileMenuLink")).click();
-        this.driver.findElement(By.linkText("Logout")).click();
-
+        logout();
     }
 
     @Test
@@ -101,8 +99,6 @@ public class RegisterAndLogin {
 
         String text = this.driver.findElement(By.cssSelector(".nav-item:nth-child(1) a")).getText();
         assertThat(text, is("Home"));
-//
-//        this.driver.quit();
     }
 
     @Test
@@ -143,6 +139,11 @@ public class RegisterAndLogin {
         this.driver.findElement(By.id("submit")).click();
 
         assertLoginErrorMessage();
+    }
+
+    private void logout() {
+        this.driver.findElement(By.id("navbarDarkProfileMenuLink")).click();
+        this.driver.findElement(By.linkText("Logout")).click();
     }
 
     private void assertLoginErrorMessage() {

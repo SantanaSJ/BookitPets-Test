@@ -11,6 +11,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +32,6 @@ public class RoomAvailability {
     public void tearDown() {
         this.driver.quit();
     }
-
 
     //    invalid
     @Test
@@ -61,7 +62,7 @@ public class RoomAvailability {
     }
 
     @Test
-    public void check_availability_with_no_checkin_date_and_valid_checkout_date() {
+    public void check_availability_with_no_checkin_date_and_checkout_date_bigger_than_current_date() {
         logInUser();
         verifySuccessfulLogin();
         this.driver.findElement(By.id("showAll")).click();
@@ -74,18 +75,18 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkOut")).sendKeys("03-10-2022");
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkInDateErrorMessage = getCheckInDateErrorMessage();
         assertEquals("Check in date is required!", checkInDateErrorMessage);
-//        this.driver.quit();
     }
 
     @Test
-    public void check_availability_with_valid_checkin_date_and_no_checkout_date() {
+    public void check_availability_with_checkin_date_equal_to_current_date_and_no_checkout_date() {
+
         logInUser();
         verifySuccessfulLogin();
 
@@ -99,19 +100,17 @@ public class RoomAvailability {
         WebElement bookNowButton = getBookNowButton();
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("01-10-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("Check out date is required!", checkOutDateErrorMessage);
-
-//        this.driver.quit();
     }
 
     @Test
-    public void check_availability_with_invalid_checkin_date_and_valid_checkout_date() {
+    public void check_availability_with_checkin_date_smaller_than_current_date_and_checkout_date_bigger_than_current_date() {
         logInUser();
         verifySuccessfulLogin();
 
@@ -126,16 +125,14 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("29-06-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("02-07-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getInvalidCheckInDateSmallerThanCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkInDateErrorMessage = getCheckInDateErrorMessage();
         assertEquals("must be a date in the present or in the future", checkInDateErrorMessage);
-
-//        this.driver.quit();
 
     }
 
@@ -154,16 +151,14 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("01-07-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("01-07-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
-
-//        this.driver.quit();
     }
 
     @Test
@@ -182,16 +177,15 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("02-07-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("01-07-2022");
+        getValidCheckInDateBiggerThanCurrentDate();
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
-
-//        this.driver.quit();
     }
 
     @Test
@@ -210,16 +204,14 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("03-07-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("30-06-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getInvalidCheckOutDateSmallerThanCurrentDate()));
 
         By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
         this.driver.findElement(checkButtonByXpath).click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
-
-//        this.driver.quit();
     }
 
     //    valid ??
@@ -250,8 +242,6 @@ public class RoomAvailability {
         this.driver.findElement(checkButtonByXpath).click();
         String text = this.driver.findElement(By.cssSelector("div.alert-success > span")).getText();
         assertEquals("Selected rooms are available!", text);
-
-//        driver.quit();
     }
 
     @Test
@@ -279,8 +269,33 @@ public class RoomAvailability {
         this.driver.findElement(checkButtonByXpath).click();
         String text = this.driver.findElement(By.cssSelector("div.alert-success > span")).getText();
         assertEquals("Selected rooms are available!", text);
+    }
 
-//        driver.quit();
+    private LocalDate getValidCheckInDateBiggerThanCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.plusDays(5);
+    }
+
+    private LocalDate getInvalidCheckOutDateSmallerThanCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.minusDays(5L);
+    }
+
+    private LocalDate getValidCheckOutDateBiggerThanCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.plusDays(5L);
+    }
+
+    private LocalDate getInvalidCheckInDateSmallerThanCurrentDate() {
+        return LocalDate.of(2022, 6, 1);
+    }
+
+    private String convertDateToString(LocalDate currentDate) {
+        return currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    }
+
+    private LocalDate getCurrentDate() {
+       return LocalDate.now();
     }
 
     private String getCheckInDateErrorMessage() {
