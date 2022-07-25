@@ -8,9 +8,10 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -22,7 +23,7 @@ public class RoomAvailability {
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\User\\Desktop\\chrome driver\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\User\\Desktop\\drivers\\chromedriver.exe");
         this.driver = new ChromeDriver();
         this.driver.manage().window().maximize();
         this.driver.get("https://bookitpets.herokuapp.com/");
@@ -43,13 +44,13 @@ public class RoomAvailability {
 
         waitUntilHotelsAreLoaded();
 
-        this.executor = (JavascriptExecutor) this.driver;
-        this.executor.executeScript("scroll(0, 300);");
-        WebElement bookNowButton = getBookNowButton();
-        this.executor.executeScript("arguments[0].click();", bookNowButton);
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("scroll(0, 300);");
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        WebElement bookNowButton = getBookNowButton();
+        executor.executeScript("arguments[0].click();", bookNowButton);
+
+        findCheckButton().click();
 
         String checkInDateErrorMessage = getCheckInDateErrorMessage();
         String checkIOutDateErrorMessage = getCheckOutDateErrorMessage();
@@ -61,6 +62,7 @@ public class RoomAvailability {
 
     }
 
+
     @Test
     public void check_availability_with_no_checkin_date_and_checkout_date_bigger_than_current_date() {
         logInUser();
@@ -68,17 +70,17 @@ public class RoomAvailability {
         this.driver.findElement(By.id("showAll")).click();
 
         waitUntilHotelsAreLoaded();
-        this.executor = (JavascriptExecutor) this.driver;
 
+        this.executor = (JavascriptExecutor) this.driver;
         this.executor.executeScript("scroll(0, 300);");
+
         WebElement bookNowButton = getBookNowButton();
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
         this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkInDateErrorMessage = getCheckInDateErrorMessage();
         assertEquals("Check in date is required!", checkInDateErrorMessage);
@@ -102,8 +104,7 @@ public class RoomAvailability {
 
         this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("Check out date is required!", checkOutDateErrorMessage);
@@ -128,8 +129,7 @@ public class RoomAvailability {
         this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getInvalidCheckInDateSmallerThanCurrentDate()));
         this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkInDateErrorMessage = getCheckInDateErrorMessage();
         assertEquals("must be a date in the present or in the future", checkInDateErrorMessage);
@@ -154,8 +154,7 @@ public class RoomAvailability {
         this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getCurrentDate()));
         this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
@@ -177,12 +176,11 @@ public class RoomAvailability {
 
         this.executor.executeScript("arguments[0].click();", bookNowButton);
 
-        getValidCheckInDateBiggerThanCurrentDate();
+//        getValidCheckInDateBiggerThanCurrentDate();
         this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
         this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
@@ -207,8 +205,7 @@ public class RoomAvailability {
         this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
         this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getInvalidCheckOutDateSmallerThanCurrentDate()));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
 
         String checkOutDateErrorMessage = getCheckOutDateErrorMessage();
         assertEquals("must be a future date", checkOutDateErrorMessage);
@@ -224,22 +221,24 @@ public class RoomAvailability {
 
         waitUntilHotelsAreLoaded();
 
-        this.executor = (JavascriptExecutor) this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
 
-        this.executor.executeScript("scroll(0, 300);");
+        executor.executeScript("scroll(0, 200);");
         WebElement bookNowButton = getBookNowButton();
 
-        this.executor.executeScript("arguments[0].click();", bookNowButton);
+        executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("01-11-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("03-11-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
-//        TODO:
+//        find dropdown
+        WebElement dropdown = this.driver.findElement(By.id("numberOfRooms"));
 
-        this.driver.findElement(By.id("numberOfRooms")).sendKeys("1");
+//        select number of rooms #1
+        dropdown.findElement(By.xpath("//*[@id=\"numberOfRooms\"]/option[2]")).click();
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+        findCheckButton().click();
+
         String text = this.driver.findElement(By.cssSelector("div.alert-success > span")).getText();
         assertEquals("Selected rooms are available!", text);
     }
@@ -260,15 +259,28 @@ public class RoomAvailability {
 
         executor.executeScript("arguments[0].click();", bookNowButton);
 
-        this.driver.findElement(By.id("checkIn")).sendKeys("01-11-2022");
-        this.driver.findElement(By.id("checkOut")).sendKeys("03-11-2022");
+        this.driver.findElement(By.id("checkIn")).sendKeys(convertDateToString(getValidCheckInDateBiggerThanCurrentDate()));
+        this.driver.findElement(By.id("checkOut")).sendKeys(convertDateToString(getValidCheckOutDateBiggerThanCurrentDate()));
 
-//        TODO:
+//        find dropdown for double room
+        WebElement dropdown = this.driver.findElement(By.name("rooms[1].numberOfRooms"));
 
-        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
-        this.driver.findElement(checkButtonByXpath).click();
+//        select number of rooms #2
+//        dropdown.findElement(By.xpath("option[. = '1']")).click();
+        Select select = new Select(dropdown);
+        select.selectByVisibleText("1");
+
+
+        findCheckButton().click();
+
         String text = this.driver.findElement(By.cssSelector("div.alert-success > span")).getText();
         assertEquals("Selected rooms are available!", text);
+    }
+
+    private WebElement findCheckButton() {
+        By checkButtonByXpath = By.xpath("//*[@id=\"check\"]/button");
+        WebElement element = this.driver.findElement(checkButtonByXpath);
+        return element;
     }
 
     private LocalDate getValidCheckInDateBiggerThanCurrentDate() {
@@ -283,7 +295,7 @@ public class RoomAvailability {
 
     private LocalDate getValidCheckOutDateBiggerThanCurrentDate() {
         LocalDate currentDate = LocalDate.now();
-        return currentDate.plusDays(5L);
+        return currentDate.plusDays(8);
     }
 
     private LocalDate getInvalidCheckInDateSmallerThanCurrentDate() {
@@ -295,12 +307,13 @@ public class RoomAvailability {
     }
 
     private LocalDate getCurrentDate() {
-       return LocalDate.now();
+        return LocalDate.now();
     }
 
     private String getCheckInDateErrorMessage() {
         return this.driver.findElement(By.id("checkIn-Error")).getText();
     }
+
     private String getCheckOutDateErrorMessage() {
         return this.driver.findElement(By.id("checkOut-Error")).getText();
     }
@@ -317,9 +330,12 @@ public class RoomAvailability {
         return this.driver.findElement(bookNowButtonByXpath);
     }
 
-    private void waitUntilHotelsAreLoaded() {
-        WebDriverWait wait = new WebDriverWait(this.driver, Duration.ofSeconds(1L));
-        wait.until(d -> d.findElement(By.xpath("//*[@id=\"output\"]/div[1]/div[2]/button")));
+    private void
+    waitUntilHotelsAreLoaded() {
+        WebDriverWait wait = new WebDriverWait(this.driver, 3);
+//        wait.until(d -> d.findElement(By.xpath("//*[@id=\"output\"]/div[1]/div[2]/button")));
+          wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"output\"]/div[1]/div[2]/button")));
+
     }
 
     private void verifySuccessfulLogin() {

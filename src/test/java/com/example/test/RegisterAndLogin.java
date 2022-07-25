@@ -1,14 +1,11 @@
 package com.example.test;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 
 import static org.hamcrest.CoreMatchers.*;
 
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
