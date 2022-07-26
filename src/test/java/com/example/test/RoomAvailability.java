@@ -284,22 +284,23 @@ public class RoomAvailability {
     }
 
     private LocalDate getValidCheckInDateBiggerThanCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = getCurrentDate();
         return currentDate.plusDays(5);
     }
 
     private LocalDate getInvalidCheckOutDateSmallerThanCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = getCurrentDate();
         return currentDate.minusDays(5L);
     }
 
     private LocalDate getValidCheckOutDateBiggerThanCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = getCurrentDate();
         return currentDate.plusDays(8);
     }
 
     private LocalDate getInvalidCheckInDateSmallerThanCurrentDate() {
-        return LocalDate.of(2022, 6, 1);
+        LocalDate currentDate = getCurrentDate();
+        return currentDate.minusDays(5);
     }
 
     private String convertDateToString(LocalDate currentDate) {
