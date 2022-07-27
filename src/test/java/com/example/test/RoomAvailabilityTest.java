@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoomAvailability {
+public class RoomAvailabilityTest {
     private WebDriver driver;
     private JavascriptExecutor executor;
 

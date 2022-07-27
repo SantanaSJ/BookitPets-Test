@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class RegisterAndLogin {
+public class LoginTest {
 
     private WebDriver driver;
 
@@ -42,48 +42,6 @@ public class RegisterAndLogin {
         assertEquals("BookIt", title);
     }
 
-    @Test
-    public void register_user_with_valid_data() {
-        WebElement registerButton = this.driver.findElement(By.cssSelector(".nav-item:nth-child(3) span"));
-        registerButton.click();
-        WebElement firstName = this.driver.findElement(By.id("first-name"));
-
-        String newUser = getNewUserName();
-
-        firstName.sendKeys(newUser);
-
-        String expectedFirstName = firstName.getAttribute("value");
-        this.driver.findElement(By.id("last-name")).sendKeys("TestUser");
-        this.driver.findElement(By.id("pet-name")).sendKeys("Bren");
-        this.driver.findElement(By.id("pet-kg")).sendKeys("12");
-        this.driver.findElement(By.id("phone")).sendKeys("0884433654");
-
-        String newEmail = getNewEmail();
-
-        this.driver.findElement(By.id("email_address")).sendKeys(newEmail);
-
-        this.driver.findElement(By.id("password")).sendKeys("a123456789A#");
-        this.driver.findElement(By.id("confirm-password")).sendKeys("a123456789A#");
-
-        WebElement submitButton = driver.findElement(By.id("submit"));
-
-        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
-        executor.executeScript("arguments[0].click();", submitButton);
-
-//        Point p = submitButton.getLocation();
-//        int x = p.x;
-//        int y = p.y;
-//        Actions actions = new Actions(driver);
-//        actions.moveToElement(submitButton).moveByOffset(x, y);
-//        actions.click();
-//        actions.perform();
-
-        String actual = this.driver.findElement(By.cssSelector("#navbarDarkProfileMenuLink > span")).getText();
-
-        assertEquals(actual, expectedFirstName);
-
-        logout();
-    }
 
     @Test
     public void login_user_with_valid_credentials() {
@@ -138,10 +96,6 @@ public class RegisterAndLogin {
         assertLoginErrorMessage();
     }
 
-    private void logout() {
-        this.driver.findElement(By.id("navbarDarkProfileMenuLink")).click();
-        this.driver.findElement(By.linkText("Logout")).click();
-    }
 
     private void assertLoginErrorMessage() {
         String alert = this.driver.findElement(By.className("alert")).getText();
@@ -153,16 +107,5 @@ public class RegisterAndLogin {
         loginButton.click();
     }
 
-    private String getNewEmail() {
-        int n = (int) Math.floor(Math.random() * 100);
-        String newEmail = "newTestUser" + n + "@email.com";
-        return newEmail;
-    }
-
-    private String getNewUserName() {
-        int n = (int) Math.floor(Math.random() * 100);
-        String newUser = "newTestUser" + n;
-        return newUser;
-    }
 
 }
