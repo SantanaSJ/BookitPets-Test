@@ -132,7 +132,7 @@ public class RegisterTest {
     }
 
     @Test
-    public void register_user_user_with_invalid_firstName_lastName_email_petKg_and_valid_phoneNumber_petName_password() {
+    public void register_user_with_invalid_firstName_lastName_email_petKg_and_valid_phoneNumber_petName_password() {
 
         WebElement registerButton = this.driver.findElement(By.cssSelector(".nav-item:nth-child(3) span"));
         registerButton.click();
@@ -182,6 +182,95 @@ public class RegisterTest {
         assertNotNull(confirmPassword);
     }
 
+    @Test
+    public void register_user_with_invalid_firstName_phoneNumber_petName_password_and_valid_lastName_email_peKg() {
+
+        WebElement registerButton = this.driver.findElement(By.cssSelector(".nav-item:nth-child(3) span"));
+        registerButton.click();
+        //        make sure we are on the right page
+        String currentUrl = driver.getCurrentUrl();
+        assertEquals("https://bookitpets.herokuapp.com/users/register", currentUrl);
+
+//        invalid
+        this.driver.findElement(By.id("first-name")).sendKeys("Te");
+        this.driver.findElement(By.id("phone")).sendKeys("08855443337");
+        this.driver.findElement(By.id("pet-name")).sendKeys("RexRexRexRex");
+        this.driver.findElement(By.id("password")).sendKeys("a123456789");
+
+//        valid
+        WebElement lastName = this.driver.findElement(By.id("last-name"));
+        WebElement emailAddress = this.driver.findElement(By.id("email_address"));
+        WebElement petKg = this.driver.findElement(By.id("pet-kg"));
+        lastName.sendKeys("TestUser");
+        emailAddress.sendKeys("testuser@email.com");
+        petKg.sendKeys("12");
+
+        WebElement submitButton = this.driver.findElement(By.id("submit"));
+
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("arguments[0].click()", submitButton);
+
+//        Assert
+
+        String firstNameError = this.driver.findElement(By.id("first-nameError")).getText();
+        String phoneError = this.driver.findElement(By.id("phoneError")).getText();
+        String petNameError = this.driver.findElement(By.id("pet-nameError")).getText();
+        String passwordError = this.driver.findElement(By.id("passwordError")).getText();
+
+        assertEquals("First name must be between 3 and 20 characters.", firstNameError);
+        assertEquals("Phone number should be in the format: 0884444333", phoneError);
+        assertEquals("Pet name must be between 3 and 10 characters.", petNameError);
+        assertEquals("Password must contain minimum 8 characters: At least 1 upper case letter, " +
+                "At least 1 lower case letter, At least 1 digit, At least 1 special character", passwordError);
+
+
+        assertNotNull(lastName);
+        assertNotNull(emailAddress);
+        assertNotNull(petKg);
+    }
+
+    @Test
+    public void register_user_with_non_unique_email() {
+        WebElement registerButton = this.driver.findElement(By.cssSelector(".nav-item:nth-child(3) span"));
+        registerButton.click();
+        //        make sure we are on the right page
+        String currentUrl = driver.getCurrentUrl();
+        assertEquals("https://bookitpets.herokuapp.com/users/register", currentUrl);
+
+        WebElement firstName = this.driver.findElement(By.id("first-name"));
+        WebElement lastName = this.driver.findElement(By.id("last-name"));
+        WebElement phone = this.driver.findElement(By.id("phone"));
+//        nonunique email
+        WebElement emailAddress = this.driver.findElement(By.id("email_address"));
+
+        WebElement petName = this.driver.findElement(By.id("pet-name"));
+        WebElement petKg = this.driver.findElement(By.id("pet-kg"));
+        WebElement password = this.driver.findElement(By.id("password"));
+        WebElement confirmPassword = this.driver.findElement(By.id("confirm-password"));
+
+        firstName.sendKeys("TestUser");
+        lastName.sendKeys("TestUser");
+        phone.sendKeys("0885544333");
+        emailAddress.sendKeys("testuser@email.com");
+        petName.sendKeys("Rex");
+        petKg.sendKeys("12");
+        password.sendKeys("a123456789A#");
+        confirmPassword.sendKeys("a123456789A#");
+
+        WebElement submitButton = this.driver.findElement(By.id("submit"));
+
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("arguments[0].click()", submitButton);
+
+
+
+        String emailAddressError = this.driver.findElement(By.id("email_addressError")).getText();
+
+        assertEquals("Email already exists. Please log in.", emailAddressError);
+
+        System.out.println();
+
+    }
     private void logout() {
         this.driver.findElement(By.id("navbarDarkProfileMenuLink")).click();
         this.driver.findElement(By.linkText("Logout")).click();
