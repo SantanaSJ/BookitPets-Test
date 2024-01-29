@@ -36,13 +36,13 @@ public class UserAuthorizationTest {
         String currentUrl = this.driver.getCurrentUrl();
         String title = this.driver.findElement(By.xpath("//h1[contains(.,'Welcome to BookIt Pets')]")).getText();
 
-        WebElement homeLink = this.driver.findElement(By.linkText("/home"));
+        WebElement homeLink = this.driver.findElement(By.xpath("//*[@id=\"navbarNavDarkDropdown\"]/ul/li[1]/a"));
         homeLink.click();
         String loginUrl = this.driver.getCurrentUrl();
-        String login = this.driver.findElement(By.id("login")).getText();
+        String login = this.driver.findElement(By.className("card-header")).getText();
 
         assertEquals("http://localhost:8080/", currentUrl);
-        assertEquals("Welcome to BookIt Pets", title);
+        assertEquals("WELCOME TO BOOKIT PETS", title);
         assertEquals("http://localhost:8080/users/login", loginUrl);
         assertEquals("Log in", login);
     }
