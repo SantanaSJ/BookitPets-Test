@@ -5,3 +5,6 @@ target/
 
 # Ignore all .class files
 *.class
+
+# Ignore allure-results directory
+allure-results/
