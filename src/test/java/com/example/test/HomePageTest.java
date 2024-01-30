@@ -46,6 +46,5 @@ public class HomePageTest {
         assertNotNull(searchField, "Search field is expected to be present.");
         assertNotNull(usernameLink);
         assertEquals("Adminnew", username);
-
     }
 }
