@@ -1,0 +1,7 @@
+# .gitignore
+
+# Ignore target directory
+target/
+
+# Ignore all .class files
+*.class
