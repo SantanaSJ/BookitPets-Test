@@ -24,6 +24,7 @@ public class HomePageTest {
         this.driver.get("http://localhost:8080/");
     }
 
+
     @Test
     public void verify_user_is_on_homepage() {
 
